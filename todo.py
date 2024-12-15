@@ -12,13 +12,15 @@ def create_todo(todos, title, description, level):
 
 def main_loop():
     user_input = ""
+    load_todo_list()
     while 1:
         print(run_command(user_input))
         user_input = input("> ")
         if user_input.lower().startswith("quit"):
             print("Exiting...")
             break
-
+    save_todo_list()
+    
 def get_input(fields):
     user_input = {}
     for field in fields:
@@ -89,6 +91,7 @@ def show_todo(todo, index):
         else:
             output += " " * 24 + " "
         output += "\n"
+        
     return output
 
 def show_todos(todos):
