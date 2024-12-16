@@ -9,6 +9,9 @@ def create_todo(todos, title, description, level):
         'level' : level
     }
     todos.append(todo)
+    sort_todos()
+    save_todo_list()
+    return "Created '%s'." % title
 
 def main_loop():
     user_input = ""
@@ -20,7 +23,7 @@ def main_loop():
             print("Exiting...")
             break
     save_todo_list()
-    
+
 def get_input(fields):
     user_input = {}
     for field in fields:
@@ -97,13 +100,13 @@ def show_todo(todo, index):
 def show_todos(todos):
     output = ("Item     Title           "
               "Description              Level\n")
-    sorted_todos = sort_todos(todos)
     
-    for index, todo in enumerate(sorted_todos):
+    for index, todo in enumerate(todos):
         output += show_todo(todo, index)
     return output
 
-def sort_todos(todos):
+def sort_todos():
+    global todos
     important = [capitalize(todo) for todo in todos
                 if todo['level'].lower() == 'important']
     unimportant = [todo for todo in todos
@@ -114,11 +117,43 @@ def sort_todos(todos):
     todos = important + medium + unimportant
     return todos
 
+def delete_todo(todos, which):
+    if not which.isdigit():
+        return ("'" + which +
+            "' needs to be the number of a todo!")
+    which = int(which)
+    if which < 1 or which > len(todos):
+        return ("'" + str(which) +
+        "' needs to be the number of a todo!")
+    del todos[which-1]
+    return "Deleted todo #" + str(which)
+
+def edit_todo(todos, which, title, description, level):
+    if not which.isdigit():
+        return ("'" + which +
+            "' needs to be the number of a todo!")
+    which = int(which)
+    if which < 1 or which > len(todos):
+        return ("'" + str(which) +
+            "' needs to be the number of a todo!")
+    todo = todos[which-1]
+    if title != "":
+        todo['title'] = title
+    if description != "":
+        todo['description'] = description
+    if level != "":
+        todo['level'] = level
+    sort_todos()
+    return "Edited todo #" + str(which)
+
 
 commands = {
     'new' : [create_todo,['title', 'description', 'level']],
     'show' : [show_todos, []],
     'test' : [test, ['abcd', 'ijkl']],
+    'delete' : [delete_todo, ['which']],
+    'edit' : [edit_todo,
+              ['which', 'title', 'description', 'level']],
 }
 
 
